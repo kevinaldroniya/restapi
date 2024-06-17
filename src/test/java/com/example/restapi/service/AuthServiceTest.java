@@ -14,8 +14,10 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 
 
@@ -23,6 +25,9 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 
 class AuthServiceTest {
@@ -62,15 +67,15 @@ class AuthServiceTest {
                 user.getUsername(),user.getPassword(),new ArrayList<>()
         );
 
-        Mockito.when(userRepository.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
-        Mockito.when(customUserDetailService.loadUserByUsername(user.getUsername())).thenReturn(userDetails);
-        Mockito.when(jwtTokenUtil.generateToken(user.getUsername())).thenReturn("fake-jwt-token");
+        when(userRepository.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
+        when(customUserDetailService.loadUserByUsername(user.getUsername())).thenReturn(userDetails);
+        when(jwtTokenUtil.generateToken(user.getUsername())).thenReturn("fake-jwt-token");
     }
 
     @Test
     public void testAuthenticationUser() throws Exception {
         Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, new ArrayList<>());
-        Mockito.when(authenticationManager.authenticate(Mockito.any())).thenReturn(authentication);
+        when(authenticationManager.authenticate(any())).thenReturn(authentication);
 
         UserLoginDto userLoginDto = new UserLoginDto();
         userLoginDto.setUsername(user.getUsername());
@@ -84,5 +89,40 @@ class AuthServiceTest {
         assertEquals("fake-jwt-token",userLoginResponseDto.getToken());
     }
 
+    @Test
+    public void loginSuccess() throws Exception {
+        UserLoginDto loginDto = new UserLoginDto();
+        loginDto.setUsername("testuser");
+        loginDto.setPassword("password");
+
+        User user = new User();
+        user.setUsername("testuser");
+        user.setPassword("password");
+        user.setEmail("test@test.com");
+
+        when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(user));
+        Authentication auth = mock(Authentication.class);
+        when(customUserDetailService.loadUserByUsername(user.getUsername())).thenReturn(userDetails);
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(auth);
+        when(jwtTokenUtil.generateToken(user.getUsername())).thenReturn("fake-jwt-token");
+
+        UserLoginResponseDto response = authService.userLogin(loginDto);
+
+        assertEquals("fake-jwt-token", response.getToken());
+    }
+
+    @Test
+    public void testLoginFailure(){
+        UserLoginDto loginDto = new UserLoginDto();
+        loginDto.setUsername("testuser");
+        loginDto.setPassword("wrongpassword");
+
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenThrow(BadCredentialsException.class);
+
+        assertThrows(BadCredentialsException.class, () -> {
+            authService.userLogin(loginDto);
+        });
+    }
 
 }

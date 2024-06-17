@@ -21,3 +21,7 @@ n
 >src/test/java/com/example/restapi/service/AuthServiceTest.java,9\d\9d837f34aa7d4d6f4bf870beb2e329726a6093a4
 p
 @src/main/java/com/example/restapi/controller/UserController.java,e\e\ee9f86ce114d259fcbfb22dba2a7a6ffe53ccd09
+j
+:src/main/java/com/example/restapi/service/RoleService.java,1\6\16ca9461d535149732f41008f8f06d0a34cceae2
+a
+1src/main/java/com/example/restapi/model/Role.java,d\a\da2b41cb5b2bf83970efcf9be973abcd1d8f49f9

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.restapi.service.AuthServiceTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2024-06-17T14:22:24" hostname="DESKTOP-1C4CH0B" time="2.178">
+  <properties/>
+  <testcase name="testLoginFailure()" classname="com.example.restapi.service.AuthServiceTest" time="2.105"/>
+  <testcase name="testAuthenticationUser()" classname="com.example.restapi.service.AuthServiceTest" time="0.02"/>
+  <testcase name="loginSuccess()" classname="com.example.restapi.service.AuthServiceTest" time="0.044"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

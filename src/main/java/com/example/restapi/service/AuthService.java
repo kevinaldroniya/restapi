@@ -35,13 +35,13 @@ public class AuthService {
     @Autowired
     private UserRepository userRepository;
 
-    public UserLoginResponseDto userLogin(UserLoginDto request) throws Exception {
+    public UserLoginResponseDto userLogin(UserLoginDto request) {
      try {
          authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                  request.getUsername(), request.getPassword()
          ));
      }catch (BadCredentialsException e){
-         throw new Exception("Incorrect username or password");
+         throw new BadCredentialsException("Incorrect username or password");
      }
 
      final UserDetails userDetails = customUserDetailService
